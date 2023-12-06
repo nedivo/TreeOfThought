@@ -10,3 +10,7 @@ dev-env:
 .PHONY: run-local
 run-local:
 	poetry run python main.py
+
+.PHONY: run-streamlit
+run-streamlit:
+	poetry run streamlit run streamlit_app.py

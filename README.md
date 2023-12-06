@@ -57,7 +57,12 @@ from tree_of_thoughts import TreeOfThoughts
 # Define the problem
 
 initial_problem = "Describe your problem here."
-current_state = "Initial state of the problem."
+
+# Define the quality threshold
+quality_threshold = 8
+
+# Define the maximum iterations
+max_iterations = 3
 
 # Create a TreeOfThoughts instance
 
@@ -65,6 +70,6 @@ tot = TreeOfThoughts(model="gpt-3.5-turbo", max_depth=3, breadth_limit=5, initia
 
 # Find a solution
 
-solution = tot.search(current_state=current_state)
+solution = tot.search(current_state=initial_problem, quality_threshold=quality_threshold, max_iterations=max_iterations)
 print("Solution:", solution)
 ```
