@@ -155,8 +155,8 @@ class TreeOfThoughts:
         logs = []
         queue = [(0, current_state)]
         iteration_count = 0
-        best_state = current_state
-        best_value = 0
+        best_state = None  # initialize the best_state as None
+        best_value = float("-inf")  # initialize the best_value as negative infinity
 
         for i in range(max_iterations):
             iteration_count += 1
@@ -169,26 +169,26 @@ class TreeOfThoughts:
                 self.logger.debug("Progress Change %s", progress)
                 progress_bar.progress(progress)
 
-            if not queue or self.is_termination_condition_met(
-                best_state, iteration_count, max_iterations, quality_threshold
-            ):
-                break
-
             next_level = []
             while queue:
                 value, state = heapq.heappop(queue)
-                if value > best_value:
-                    best_value = value
-                    best_state = state
-
                 thoughts = self.generate_thoughts(state)
                 for thought in thoughts:
                     new_state = f"{state} -> {thought}"
                     next_level.append(new_state)
+
             evaluated_states = self.evaluate_states(next_level)
             queue = heapq.nlargest(
                 self.breadth_limit, evaluated_states, key=lambda x: x[0]
             )
+            if queue[0][0] > best_value:
+                best_value, best_state = queue[0]
+
+            if not queue or self.is_termination_condition_met(
+                best_value, iteration_count, max_iterations, quality_threshold
+            ):
+                break
+
             logs.append(f"Finished iteration {i+1} with state: {best_state}")
 
         if progress_bar is not None:
@@ -197,9 +197,9 @@ class TreeOfThoughts:
         return best_state.split(" -> ")[-1], logs
 
     def is_termination_condition_met(
-        self, current_state, iteration_count, max_iterations, quality_threshold
+        self, current_quality, iteration_count, max_iterations, quality_threshold
     ):
-        current_quality = self.evaluate_state(current_state)
+        # current_quality = self.evaluate_state(current_state)
         if current_quality >= quality_threshold:
             self.logger.debug(
                 "Termination condition met: Quality threshold (%s) reached with current quality (%s)",
